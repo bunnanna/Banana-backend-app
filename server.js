@@ -20,7 +20,9 @@ app.use(logger)
 // Cookie
 app.use(cookieParser())
 // CORS 
-
+const cors = require('cors');
+const corsOptions = require("./config/corsOptions");
+app.use(cors(corsOptions))
 // JSON 
 app.use(express.json())
 
