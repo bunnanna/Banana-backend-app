@@ -14,7 +14,7 @@ const createUser = async(req,res)=>{
     if (!username||!password){
         return res.status(400).json({message:"All Field Are Require"})
     }
-    const duplicate = await User.findOne({username}).collation({locale:"en ja",strength:2}).lean().exec()
+    const duplicate = await User.findOne({username}).collation({locale:"en",strength:2}).collation({locale:"ja",strength:2}).lean().exec()
     if(duplicate){
         return res.status(409).json({message:"Duplicate username"})
     }
@@ -41,7 +41,7 @@ const updateUser = async (req,res) =>{
 
     if (!user) return res.status(400).json({message:"User Not Found"})
 
-    const duplicate = await User.findOne({username}).collation({locale:"en ja",strength:2}).lean().exec()
+    const duplicate = await User.findOne({username}).collation({locale:"en",strength:2}).collation({locale:"ja",strength:2}).lean().exec()
     if(duplicate) return res.status(409).json({message:"Duplicate username"})
     user.username = username
     user.roles = roles

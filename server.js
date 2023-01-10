@@ -34,6 +34,7 @@ app.use("/",require("./routes/root"))
 app.use("/users",require("./routes/userRoutes"))
 
 // tasks 
+app.use("/tasks",require("./routes/taskRoutes"))
 
 // ERROR ROUTE 
 app.all("*",(req,res)=>{
