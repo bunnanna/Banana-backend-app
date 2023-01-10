@@ -14,7 +14,7 @@ const createUser = async(req,res)=>{
     if (!username||!password){
         return res.status(400).json({message:"All Field Are Require"})
     }
-    const duplicate = await User.findOne({username}).collation({locale:"en",strength:2}).lean().exec()
+    const duplicate = await User.findOne({username}).collation({locale:"en ja",strength:2}).lean().exec()
     if(duplicate){
         return res.status(409).json({message:"Duplicate username"})
     }
@@ -31,12 +31,39 @@ const createUser = async(req,res)=>{
     }
 }
 // PATCH
-const updateUser = (req,res) =>{
+const updateUser = async (req,res) =>{
     const{id,username,password,roles,teams,active} = req.body
     if (!id||!username||!Array.isArray(roles)||!roles.length||typeof active !== "boolean"||!!Array.isArray(teams)){
         return res.status(400).json({message:"All Field Except Teams Are Require"})
     }
+
+    const user = await User.findById(id).exec()
+
+    if (!user) return res.status(400).json({message:"User Not Found"})
+
+    const duplicate = await User.findOne({username}).collation({locale:"en ja",strength:2}).lean().exec()
+    if(duplicate) return res.status(409).json({message:"Duplicate username"})
+    user.username = username
+    user.roles = roles
+    user.active = active
+    user.teams = teams
+    if(password) user.password = await bcrypt.hash(password,10)
+
+    const updateUser = await user.save()
+
+    res.json({message:`${updateUser.username} updated`})
 }
 // DELETE 
+const deleteUser = async (req,res)=>{
+    const{id}=req.body
+    if(!id) return res.status(400).json({message:`User ID Required`})
 
-module.exports = {getallUsers,createUser}
+    const user = User.findById(id).exec()
+    if(!user) return res.status(400).json({message:`User not Found`})
+
+    const result = await user.deleteOne()
+    const reply = `Username: ${result.username} with ID : ${result._id} is deleted`
+    res.json(reply)
+}
+
+module.exports = {getallUsers,createUser,updateUser,deleteUser}
