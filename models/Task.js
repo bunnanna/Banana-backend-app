@@ -11,7 +11,7 @@ const taskSchema = new mongoose.Schema({
     },
     teams:{
         type:[String],
-        default:["Employee"]
+        default:[]
     },
     skills:{
         type:[String],

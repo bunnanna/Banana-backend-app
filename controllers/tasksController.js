@@ -46,7 +46,9 @@ const updateTask = async (req,res) =>{
     if (!task) return res.status(400).json({message:"Task Not Found"})
 
     const duplicate = await Task.findOne({projectname,taskname}).collation({locale:"en",strength:2}).collation({locale:"ja",strength:2}).lean().exec()
-    if(duplicate) return res.status(409).json({message:"Duplicate taskname"})
+    if(duplicate && duplicate?._id.toString() !== id){
+        return res.status(409).json({message:"Duplicate username"})
+     }
     task.projectname=projectname
     task.taskname=taskname
     task.teams=teams
