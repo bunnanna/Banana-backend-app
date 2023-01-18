@@ -38,6 +38,9 @@ app.use("/users",require("./routes/userRoutes"))
 // tasks 
 app.use("/tasks",require("./routes/taskRoutes"))
 
+// auth 
+app.use("/auth",require("./routes/authRoutes"))
+
 // ERROR ROUTE 
 app.all("*",(req,res)=>{
     res.status(404)
