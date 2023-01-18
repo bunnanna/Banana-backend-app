@@ -6,6 +6,14 @@ const getallUsers = async(req,res)=>{
     if(!users?.length){
         return res.status(400).json({message:"User Not Found"})
     }
+    let AllConnectUser = await User.find({username:["test11","test12"]}).select("-password").populate("roles")
+    const arll = await Promise.all(AllConnectUser.map(async(user)=>{
+        const roles = await Promise.all(user.roles.map(async(role)=>{
+            return role.rolename
+        }))
+        return user
+    }))
+    console.log(arll);
     res.json(users)
 }
 // CREATE 
@@ -33,7 +41,7 @@ const createUser = async(req,res)=>{
 // PATCH
 const updateUser = async (req,res) =>{
     const{id,username,password,roles,teams,active,skills} = req.body
-    if (!id||!username||!Array.isArray(roles)||!roles.length||typeof active !== "boolean"||!!Array.isArray(teams)||!!Array.isArray(skills)){
+    if (!id||!username||!Array.isArray(roles)){
         return res.status(400).json({message:"All Field Except Teams Are Require"})
     }
 
@@ -42,7 +50,9 @@ const updateUser = async (req,res) =>{
     if (!user) return res.status(400).json({message:"User Not Found"})
 
     const duplicate = await User.findOne({username}).collation({locale:"en",strength:2}).collation({locale:"ja",strength:2}).lean().exec()
-    if(duplicate) return res.status(409).json({message:"Duplicate username"})
+    if(duplicate && duplicate?._id.toString() !== id){
+        return res.status(409).json({message:"Duplicate username"})
+    }
     user.username = username
     user.roles = roles
     user.active = active
@@ -59,7 +69,7 @@ const deleteUser = async (req,res)=>{
     const{id}=req.body
     if(!id) return res.status(400).json({message:`User ID Required`})
 
-    const user = User.findById(id).exec()
+    const user = await User.findById(id).exec()
     if(!user) return res.status(400).json({message:`User not Found`})
 
     const result = await user.deleteOne()

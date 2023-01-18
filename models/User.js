@@ -10,17 +10,20 @@ const userSchema = new mongoose.Schema({
         require:true
     },
     roles:{
-        type:[String],
-        default:["Employee"]
+        type:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Role",
+        }],
+        default:["63c79e03e1d02be7d9e920c9"]
     },
-    teams:{
-        type:[String],
-        default:[]
-    },
-    skills:{
-        type:[String],
-        default:[]
-    },
+    teams:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Team"
+    }],
+    skills:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Skill"
+    }],
     active:{
         type:Boolean,
         default:true

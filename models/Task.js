@@ -2,21 +2,22 @@ const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema({
     projectname:{
-        type:String,
-        require:true
+        type:mongoose.Schema.Types.ObjectId,
+        require:true,
+        ref:"Project"
     },
     taskname:{
         type:String,
         require:true
     },
-    teams:{
-        type:[String],
-        default:[]
-    },
-    skills:{
-        type:[String],
-        default:[]
-    },
+    teams:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Team"
+    }],
+    skills:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Skill"
+    }],
     description:{
         type:String,
         default:""
@@ -40,7 +41,11 @@ const taskSchema = new mongoose.Schema({
     },
     activity:{
         type:[{
-            "username":String,
+            "username":{
+                type:mongoose.Schema.Types.ObjectId,
+                require:true,
+                ref:"User"
+            },
             "action":String,
             "timestamps":{
                 type:Date,

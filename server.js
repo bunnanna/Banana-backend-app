@@ -35,6 +35,9 @@ app.use("/",require("./routes/root"))
 // users 
 app.use("/users",require("./routes/userRoutes"))
 
+// roles 
+app.use("/roles",require("./routes/roleRoutes"))
+
 // tasks 
 app.use("/tasks",require("./routes/taskRoutes"))
 
