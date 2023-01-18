@@ -14,7 +14,12 @@ const userSchema = new mongoose.Schema({
         default:["Employee"]
     },
     teams:{
-        type:[String]
+        type:[String],
+        default:[]
+    },
+    skills:{
+        type:[String],
+        default:[]
     },
     active:{
         type:Boolean,

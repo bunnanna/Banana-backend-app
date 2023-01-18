@@ -33,6 +33,21 @@ const taskSchema = new mongoose.Schema({
     complete:{
         type:Boolean,
         default:false
+    },
+    status:{
+        type:String,
+        default:"assign"
+    },
+    activity:{
+        type:[{
+            "username":String,
+            "action":String,
+            "timestamps":{
+                type:Date,
+                default:Date.now(),
+            }
+        }],
+        default:[]
     }
 },{
     timestamps:true

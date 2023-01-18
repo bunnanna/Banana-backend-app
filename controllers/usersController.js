@@ -10,7 +10,7 @@ const getallUsers = async(req,res)=>{
 }
 // CREATE 
 const createUser = async(req,res)=>{
-    const{username,password,roles,teams} = req.body
+    const{username,password,roles,teams,skills} = req.body
     if (!username||!password){
         return res.status(400).json({message:"All Field Are Require"})
     }
@@ -20,7 +20,7 @@ const createUser = async(req,res)=>{
     }
 
     const hashedPwd = await bcrypt.hash(password,10)
-    const userObject = {username,"password":hashedPwd,roles,teams}
+    const userObject = {username,"password":hashedPwd,roles,teams,skills}
 
     const user = await User.create(userObject)
 
@@ -32,8 +32,8 @@ const createUser = async(req,res)=>{
 }
 // PATCH
 const updateUser = async (req,res) =>{
-    const{id,username,password,roles,teams,active} = req.body
-    if (!id||!username||!Array.isArray(roles)||!roles.length||typeof active !== "boolean"||!!Array.isArray(teams)){
+    const{id,username,password,roles,teams,active,skills} = req.body
+    if (!id||!username||!Array.isArray(roles)||!roles.length||typeof active !== "boolean"||!!Array.isArray(teams)||!!Array.isArray(skills)){
         return res.status(400).json({message:"All Field Except Teams Are Require"})
     }
 
@@ -47,6 +47,7 @@ const updateUser = async (req,res) =>{
     user.roles = roles
     user.active = active
     user.teams = teams
+    user.skills = skills
     if(password) user.password = await bcrypt.hash(password,10)
 
     const updateUser = await user.save()

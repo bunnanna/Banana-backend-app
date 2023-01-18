@@ -10,7 +10,7 @@ const getallTasks = async(req,res)=>{
 }
 // CREATE 
 const createTask = async(req,res)=>{
-    const{projectname,taskname,teams,skills,description,checklist,complete} = req.body
+    const{projectname,taskname,teams,skills,description,checklist} = req.body
     if (!taskname||!projectname||!teams?.length||!Array.isArray(teams)||!Array.isArray(skills)||!Array.isArray(checklist)){
         return res.status(400).json({message:"All Field Are Require"})
     }
@@ -19,7 +19,7 @@ const createTask = async(req,res)=>{
         return res.status(409).json({message:"Duplicate taskname in project"})
     }
 
-    const taskObject = {projectname,taskname,teams,skills,description,checklist,complete}
+    const taskObject = {projectname,taskname,teams,skills,description,checklist}
 
     const task = await Task.create(taskObject)
 
@@ -31,8 +31,8 @@ const createTask = async(req,res)=>{
 }
 // PATCH
 const updateTask = async (req,res) =>{
-    const{id,projectname,taskname,teams,skills,description,checklist,complete} = req.body
-    if (!id||!projectname||!taskname||!teams?.length||!Array.isArray(teams)||!Array.isArray(skills)||!Array.isArray(checklist)||typeof complete !== "boolean"){
+    const{id,projectname,taskname,teams,skills,description,checklist,complete,status,activity} = req.body
+    if (!id||!projectname||!taskname||!teams?.length||!Array.isArray(teams)||!Array.isArray(skills)||!Array.isArray(checklist)||typeof complete !== "boolean"||!Array.isArray(activity)){
         return res.status(400).json({message:"All * Field Are Require"})
     }
     if (checklist?.length>0) {
@@ -56,6 +56,8 @@ const updateTask = async (req,res) =>{
     task.description=description
     task.checklist=checklist
     task.complete=complete
+    if(status) task.status=status
+    task.activity=[...task.activity,activity]
     
 
     const updateTask = await task.save()
