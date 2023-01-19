@@ -42,7 +42,9 @@ const updateRole = async (req,res) =>{
     if (!role) return res.status(400).json({message:"Role Not Found"})
 
     const duplicate = await Role.findOne({rolename}).collation({locale:"en",strength:2}).collation({locale:"ja",strength:2}).lean().exec()
-    if(duplicate) return res.status(409).json({message:"Duplicate rolename"})
+    if(duplicate && duplicate?._id.toString() !== id){
+        return res.status(409).json({message:"Duplicate username"})
+    }
 
     role.rolename = rolename
 

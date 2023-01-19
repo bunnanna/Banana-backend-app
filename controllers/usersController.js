@@ -6,15 +6,14 @@ const getallUsers = async(req,res)=>{
     if(!users?.length){
         return res.status(400).json({message:"User Not Found"})
     }
-    let AllConnectUser = await User.find({username:["test11","test12"]}).select("-password").populate("roles")
+    let AllConnectUser = await User.find({username:["test11","test12"]}).select("-password").populate("roles").lean()
     const arll = await Promise.all(AllConnectUser.map(async(user)=>{
         const roles = await Promise.all(user.roles.map(async(role)=>{
             return role.rolename
         }))
-        return user
+        return {...user,roles}
     }))
-    console.log(arll);
-    res.json(users)
+    res.json(arll)
 }
 // CREATE 
 const createUser = async(req,res)=>{
