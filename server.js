@@ -41,6 +41,15 @@ app.use("/roles",require("./routes/roleRoutes"))
 // tasks 
 app.use("/tasks",require("./routes/taskRoutes"))
 
+// teams 
+app.use("/teams",require("./routes/teamRoutes"))
+
+// skills 
+app.use("/skills",require("./routes/skillRoutes"))
+
+// projects 
+app.use("/projects",require("./routes/projectRoutes"))
+
 // auth 
 app.use("/auth",require("./routes/authRoutes"))
 

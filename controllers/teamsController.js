@@ -20,7 +20,7 @@ const createTeam = async(req,res)=>{
         return res.status(409).json({message:"Duplicate teamname"})
     }
 
-    const teamObject = {teamname}
+    const teamObject = {teamname,manager,member,project}
 
     const team = await Team.create(teamObject)
 
@@ -32,7 +32,7 @@ const createTeam = async(req,res)=>{
 }
 // PATCH
 const updateTeam = async (req,res) =>{
-    const{id,teamname} = req.body
+    const{id,teamname,manager,member,project} = req.body
     if (!id||!teamname){
         return res.status(400).json({message:"All Field Except Teams Are Require"})
     }
@@ -46,6 +46,9 @@ const updateTeam = async (req,res) =>{
         return res.status(409).json({message:"Duplicate username"})
     }
     team.teamname = teamname
+    team.manager = manager
+    team.member = member
+    team.project = project
 
     const updateTeam = await team.save()
 

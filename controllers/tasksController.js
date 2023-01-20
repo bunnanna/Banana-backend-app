@@ -2,42 +2,54 @@ const Task = require("../models/Task")
 
 // GET 
 const getallTasks = async(req,res)=>{
-    const tasks = await Task.find().select().lean()
+    const {filter} = req.body
+    const tasks = await Task.find(filter).populate("project").populate("teams").populate("skills").populate("activity").lean()
     if(!tasks?.length){
         return res.status(400).json({message:"Task Not Found"})
     }
-    res.json(tasks)
+    const ReadableTask = await Promise.all(tasks.map(async(task)=>{
+        const projects = task.project.projectname
+        const teams = await Promise.all(task.teams.map(async(team)=>{
+            return team.teamname
+        }))
+        const skills = await Promise.all(task.skills.map(async(skill)=>{
+            return skill.skillname
+        }))
+
+        return {...task,projects,teams,skills}
+    }))
+    res.json(ReadableTask)
 }
 // CREATE 
 const createTask = async(req,res)=>{
-    const{projectname,taskname,teams,skills,description,checklist} = req.body
-    if (!taskname||!projectname||!teams?.length||!Array.isArray(teams)||!Array.isArray(skills)||!Array.isArray(checklist)){
+    const{project,taskname,teams,skills,description,checklists} = req.body
+    if (!taskname||!project||!teams?.length||!Array.isArray(teams)||!Array.isArray(skills)||!Array.isArray(checklists)){
         return res.status(400).json({message:"All Field Are Require"})
     }
-    const duplicate = await Task.findOne({projectname,taskname}).collation({locale:"en",strength:2}).collation({locale:"ja",strength:2}).lean().exec()
+    const duplicate = await Task.findOne({project,taskname}).collation({locale:"en",strength:2}).collation({locale:"ja",strength:2}).lean().exec()
     if(duplicate){
         return res.status(409).json({message:"Duplicate taskname in project"})
     }
 
-    const taskObject = {projectname,taskname,teams,skills,description,checklist}
+    const taskObject = {project,taskname,teams,skills,description,checklists}
 
     const task = await Task.create(taskObject)
 
     if(task){
-        res.status(201).json({message:`New task ${taskname} in Project ${projectname} created`})
+        res.status(201).json({message:`New task ${taskname} in Project ${project} created`})
     }else{
         res.status(400).json({message:`Invalid task data recived`})
     }
 }
 // PATCH
 const updateTask = async (req,res) =>{
-    const{id,projectname,taskname,teams,skills,description,checklist,complete,status,activity} = req.body
-    if (!id||!projectname||!taskname||!teams?.length||!Array.isArray(teams)||!Array.isArray(skills)||!Array.isArray(checklist)||typeof complete !== "boolean"||!Array.isArray(activity)){
+    const{id,project,taskname,teams,skills,description,checklists,complete,status,activity} = req.body
+    if (!id||!project||!taskname||!teams?.length||!Array.isArray(teams)||!Array.isArray(skills)||!Array.isArray(checklists)||!Array.isArray(activity)){
         return res.status(400).json({message:"All * Field Are Require"})
     }
-    if (checklist?.length>0) {
-        if (!checklist.every(o=>typeof o.check ==="boolean" && typeof o.subtask ==="string")){
-            return res.status(400).json({message:"Invalid Checklist"})
+    if (checklists?.length>0) {
+        if (!checklists.every(o=>typeof o.check ==="boolean" && typeof o.subtask ==="string")){
+            return res.status(400).json({message:"Invalid Checklists"})
         }
 
     }
@@ -45,24 +57,24 @@ const updateTask = async (req,res) =>{
 
     if (!task) return res.status(400).json({message:"Task Not Found"})
 
-    const duplicate = await Task.findOne({projectname,taskname}).collation({locale:"en",strength:2}).collation({locale:"ja",strength:2}).lean().exec()
+    const duplicate = await Task.findOne({project,taskname}).collation({locale:"en",strength:2}).collation({locale:"ja",strength:2}).lean().exec()
     if(duplicate && duplicate?._id.toString() !== id){
         return res.status(409).json({message:"Duplicate username"})
      }
-    task.projectname=projectname
+    task.project=project
     task.taskname=taskname
     task.teams=teams
     task.skills=skills
     task.description=description
-    task.checklist=checklist
-    task.complete=complete
+    task.checklists=checklists
+    if(typeof complete === "boolean") task.complete=complete
     if(status) task.status=status
     task.activity=[...task.activity,activity]
     
 
     const updateTask = await task.save()
 
-    res.json({message:`${updateTask.taskname}in Project ${updateTask.projectname} updated`})
+    res.json({message:`${updateTask.taskname}in Project ${updateTask.project} updated`})
 }
 // DELETE 
 const deleteTask = async (req,res)=>{

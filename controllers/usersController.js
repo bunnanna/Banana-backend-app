@@ -2,18 +2,25 @@ const User = require("../models/User")
 const bcrypt = require('bcrypt');
 // GET 
 const getallUsers = async(req,res)=>{
-    const users = await User.find().select("-password").lean()
+    const {filter} = req.body
+    const users = await User.find(filter).select("-password").populate("roles").populate("teams").populate("skills").lean()
     if(!users?.length){
         return res.status(400).json({message:"User Not Found"})
     }
-    let AllConnectUser = await User.find({username:["test11","test12"]}).select("-password").populate("roles").lean()
-    const arll = await Promise.all(AllConnectUser.map(async(user)=>{
+    const ReadableUser = await Promise.all(users.map(async(user)=>{
         const roles = await Promise.all(user.roles.map(async(role)=>{
             return role.rolename
         }))
-        return {...user,roles}
+        const teams = await Promise.all(user.teams.map(async(team)=>{
+            return team.teamname
+        }))
+        const skills = await Promise.all(user.skills.map(async(skill)=>{
+            return skill.skillname
+        }))
+
+        return {...user,roles,teams,skills}
     }))
-    res.json(arll)
+    res.json(ReadableUser)
 }
 // CREATE 
 const createUser = async(req,res)=>{

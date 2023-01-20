@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema({
-    projectname:{
+    project:{
         type:mongoose.Schema.Types.ObjectId,
         require:true,
         ref:"Project"
@@ -22,7 +22,7 @@ const taskSchema = new mongoose.Schema({
         type:String,
         default:""
     },
-    checklist:{
+    checklists:{
         type:[
             {
                 "check":Boolean,

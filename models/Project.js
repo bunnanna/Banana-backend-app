@@ -5,11 +5,10 @@ const projectSchema = new mongoose.Schema({
         type:String,
         require:true
     },
-    task:{
+    tasks:[{
         type:mongoose.Schema.Types.ObjectId,
-        require:true,
         ref:"Task"
-    },
+    }],
     manager:{
         type:mongoose.Schema.Types.ObjectId,
         require:true,
