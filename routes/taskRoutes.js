@@ -6,5 +6,6 @@ router.route("/")
 .post(tasksController.createTask)
 .patch(tasksController.updateTask)
 .delete(tasksController.deleteTask)
+.put(tasksController.getallTasks)
 
 module.exports = router

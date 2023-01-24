@@ -44,7 +44,7 @@ const createTask = async(req,res)=>{
 // PATCH
 const updateTask = async (req,res) =>{
     const{id,project,taskname,teams,skills,description,checklists,complete,status,activity} = req.body
-    if (!id||!project||!taskname||!teams?.length||!Array.isArray(teams)||!Array.isArray(skills)||!Array.isArray(checklists)||!Array.isArray(activity)){
+    if (!id||!project||!taskname||!Array.isArray(teams)||!Array.isArray(skills)||!Array.isArray(checklists)||!Array.isArray(activity)){
         return res.status(400).json({message:"All * Field Are Require"})
     }
     if (checklists?.length>0) {
