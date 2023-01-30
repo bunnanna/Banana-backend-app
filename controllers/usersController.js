@@ -7,20 +7,20 @@ const getallUsers = async(req,res)=>{
     if(!users?.length){
         return res.status(400).json({message:"User Not Found"})
     }
-    const ReadableUser = await Promise.all(users.map(async(user)=>{
-        const roles = await Promise.all(user.roles.map(async(role)=>{
-            return role.rolename
-        }))
-        const teams = await Promise.all(user.teams.map(async(team)=>{
-            return team.teamname
-        }))
-        const skills = await Promise.all(user.skills.map(async(skill)=>{
-            return skill.skillname
-        }))
+    // const ReadableUser = await Promise.all(users.map(async(user)=>{
+    //     const roles = await Promise.all(user.roles.map(async(role)=>{
+    //         return role.rolename
+    //     }))
+    //     const teams = await Promise.all(user.teams.map(async(team)=>{
+    //         return team.teamname
+    //     }))
+    //     const skills = await Promise.all(user.skills.map(async(skill)=>{
+    //         return skill.skillname
+    //     }))
 
-        return {...user,roles,teams,skills}
-    }))
-    res.json(ReadableUser)
+    //     return {...user,roles,teams,skills}
+    // }))
+    res.json(users)
 }
 // CREATE 
 const createUser = async(req,res)=>{

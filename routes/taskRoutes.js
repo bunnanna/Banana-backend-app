@@ -8,4 +8,6 @@ router.route("/")
 .delete(tasksController.deleteTask)
 .put(tasksController.getallTasks)
 
+router.route("/checklists")
+.patch(tasksController.updatecheckTask)
 module.exports = router

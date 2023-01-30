@@ -3,22 +3,22 @@ const Task = require("../models/Task")
 // GET 
 const getallTasks = async(req,res)=>{
     const {filter} = req.body
-    const tasks = await Task.find(filter).populate("project").populate("teams").populate("skills").populate("activity").lean()
+    const tasks = await Task.find(filter).populate("project").populate("teams").populate("skills").populate("activity.username").lean()
     if(!tasks?.length){
         return res.status(400).json({message:"Task Not Found"})
     }
-    const ReadableTask = await Promise.all(tasks.map(async(task)=>{
-        const projects = task.project.projectname
-        const teams = await Promise.all(task.teams.map(async(team)=>{
-            return team.teamname
-        }))
-        const skills = await Promise.all(task.skills.map(async(skill)=>{
-            return skill.skillname
-        }))
+    // const ReadableTask = await Promise.all(tasks.map(async(task)=>{
+    //     const projects = task.project.projectname
+    //     const teams = await Promise.all(task.teams.map(async(team)=>{
+    //         return team.teamname
+    //     }))
+    //     const skills = await Promise.all(task.skills.map(async(skill)=>{
+    //         return skill.skillname
+    //     }))
 
-        return {...task,projects,teams,skills}
-    }))
-    res.json(ReadableTask)
+    //     return {...task,projects,teams,skills}
+    // }))
+    res.json(tasks)
 }
 // CREATE 
 const createTask = async(req,res)=>{
@@ -44,7 +44,7 @@ const createTask = async(req,res)=>{
 // PATCH
 const updateTask = async (req,res) =>{
     const{id,project,taskname,teams,skills,description,checklists,complete,status,activity} = req.body
-    if (!id||!project||!taskname||!Array.isArray(teams)||!Array.isArray(skills)||!Array.isArray(checklists)||!Array.isArray(activity)){
+    if (!id||!project||!taskname||!Array.isArray(teams)||!Array.isArray(skills)||!Array.isArray(checklists)||!activity){
         return res.status(400).json({message:"All * Field Are Require"})
     }
     if (checklists?.length>0) {
@@ -61,6 +61,7 @@ const updateTask = async (req,res) =>{
     if(duplicate && duplicate?._id.toString() !== id){
         return res.status(409).json({message:"Duplicate username"})
      }
+
     task.project=project
     task.taskname=taskname
     task.teams=teams
@@ -71,11 +72,33 @@ const updateTask = async (req,res) =>{
     if(status) task.status=status
     task.activity=[...task.activity,activity]
     
-
     const updateTask = await task.save()
-
     res.json({message:`${updateTask.taskname}in Project ${updateTask.project} updated`})
 }
+
+// PATCH
+const updatecheckTask = async (req,res) =>{
+    const{id,checklists} = req.body
+    if (!id||!Array.isArray(checklists)){
+        return res.status(400).json({message:"All * Field Are Require"})
+    }
+    if (checklists?.length>0) {
+        if (!checklists.every(o=>typeof o.check ==="boolean" && typeof o.subtask ==="string")){
+            return res.status(400).json({message:"Invalid Checklists"})
+        }
+
+    }
+    const task = await Task.findById(id).exec()
+
+    if (!task) return res.status(400).json({message:"Task Not Found"})
+    console.log(checklists);
+    task.checklists=checklists
+
+    const updateTask = await task.save()
+    res.json({message:`${updateTask.taskname}in Project ${updateTask.project} updated`})
+}
+
+
 // DELETE 
 const deleteTask = async (req,res)=>{
     const{id}=req.body
@@ -89,4 +112,4 @@ const deleteTask = async (req,res)=>{
     res.json(reply)
 }
 
-module.exports = {getallTasks,createTask,updateTask,deleteTask}
+module.exports = {getallTasks,createTask,updateTask,deleteTask,updatecheckTask}
