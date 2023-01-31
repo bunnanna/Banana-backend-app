@@ -2,7 +2,8 @@ const Project = require("../models/Project")
 
 // GET 
 const getallProjects = async(req,res)=>{
-    const projects = await Project.find().lean()
+    const {filter}= req.body
+    const projects = await Project.find(filter).populate("tasks").populate("teams").populate({path:"manager",select:"-password"}).lean()
     if(!projects?.length){
         return res.status(400).json({message:"Project Not Found"})
     }
@@ -11,7 +12,7 @@ const getallProjects = async(req,res)=>{
 }
 // CREATE 
 const createProject = async(req,res)=>{
-    const{projectname,manager,tasks,teams} = req.body
+    const{projectname,manager,teams} = req.body
     if (!projectname,!manager){
         return res.status(400).json({message:"All Field Are Require"})
     }
@@ -20,7 +21,7 @@ const createProject = async(req,res)=>{
         return res.status(409).json({message:"Duplicate projectname"})
     }
 
-    const projectObject = {projectname,manager,tasks,teams}
+    const projectObject = {projectname,manager,teams}
 
     const project = await Project.create(projectObject)
 
@@ -33,7 +34,7 @@ const createProject = async(req,res)=>{
 // PATCH
 const updateProject = async (req,res) =>{
     const{id,projectname,manager,tasks,teams,complete} = req.body
-    if (!id||!projectname||!manager){
+    if (!id){
         return res.status(400).json({message:"All Field Except Teams Are Require"})
     }
 
@@ -46,11 +47,11 @@ const updateProject = async (req,res) =>{
         return res.status(409).json({message:"Duplicate username"})
     }
 
-    project.projectname = projectname
-    project.manager=manager
-    project.tasks = tasks
-    project.teams = teams
-    project.complete = complete
+    if(projectname)project.projectname = projectname
+    if(manager)project.manager=manager
+    if(tasks)project.tasks = tasks
+    if(teams)project.teams = teams
+    if(typeof complete === "boolean")project.complete = complete
 
     const updateProject = await project.save()
 

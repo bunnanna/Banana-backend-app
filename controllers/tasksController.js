@@ -1,4 +1,5 @@
 const Task = require("../models/Task")
+const Project = require("../models/Project")
 
 // GET 
 const getallTasks = async(req,res)=>{
@@ -34,7 +35,8 @@ const createTask = async(req,res)=>{
     const taskObject = {project,taskname,teams,skills,description,checklists}
 
     const task = await Task.create(taskObject)
-
+    await Project.findByIdAndUpdate(project,{$push:{"tasks":task._id}})
+    
     if(task){
         res.status(201).json({message:`New task ${taskname} in Project ${project} created`})
     }else{
