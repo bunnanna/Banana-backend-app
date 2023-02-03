@@ -20,7 +20,7 @@ const projectSchema = new mongoose.Schema({
     }],
     complete:{
         type:Boolean,
-        default:true
+        default:false
     }
 })
 

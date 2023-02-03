@@ -4,21 +4,10 @@ const Project = require("../models/Project")
 // GET 
 const getallTasks = async(req,res)=>{
     const {filter} = req.body
-    const tasks = await Task.find(filter).populate("project").populate("teams").populate("skills").populate("activity.username").lean()
+    const tasks = await Task.find(filter).populate("project","_id projectname").populate("teams","_id teamname").populate("skills","_id skillname").populate("activity.username","_id username").lean()
     if(!tasks?.length){
         return res.status(400).json({message:"Task Not Found"})
     }
-    // const ReadableTask = await Promise.all(tasks.map(async(task)=>{
-    //     const projects = task.project.projectname
-    //     const teams = await Promise.all(task.teams.map(async(team)=>{
-    //         return team.teamname
-    //     }))
-    //     const skills = await Promise.all(task.skills.map(async(skill)=>{
-    //         return skill.skillname
-    //     }))
-
-    //     return {...task,projects,teams,skills}
-    // }))
     res.json(tasks)
 }
 // CREATE 
@@ -45,7 +34,7 @@ const createTask = async(req,res)=>{
 }
 // PATCH
 const updateTask = async (req,res) =>{
-    const{id,project,taskname,teams,skills,description,checklists,complete,status,activity} = req.body
+    const{id,project,taskname,teams,skills,description,checklists,complete,status,activity,dateline} = req.body
     if (!id||!project||!taskname||!Array.isArray(teams)||!Array.isArray(skills)||!Array.isArray(checklists)||!activity){
         return res.status(400).json({message:"All * Field Are Require"})
     }
@@ -63,13 +52,14 @@ const updateTask = async (req,res) =>{
     if(duplicate && duplicate?._id.toString() !== id){
         return res.status(409).json({message:"Duplicate username"})
      }
-
-    task.project=project
-    task.taskname=taskname
-    task.teams=teams
-    task.skills=skills
-    task.description=description
-    task.checklists=checklists
+    console.log(req.body);
+    if(project)task.project=project
+    if(taskname) task.taskname=taskname
+    if(teams) task.teams=teams
+    if(skills) task.skills=skills
+    if(description) task.description=description
+    if(checklists) task.checklists=checklists
+    if(dateline) task.dateline=dateline
     if(typeof complete === "boolean") task.complete=complete
     if(status) task.status=status
     task.activity=[...task.activity,activity]
@@ -93,11 +83,11 @@ const updatecheckTask = async (req,res) =>{
     const task = await Task.findById(id).exec()
 
     if (!task) return res.status(400).json({message:"Task Not Found"})
-    console.log(checklists);
     task.checklists=checklists
 
     const updateTask = await task.save()
     res.json({message:`${updateTask.taskname}in Project ${updateTask.project} updated`})
+
 }
 
 

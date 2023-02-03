@@ -53,6 +53,10 @@ const taskSchema = new mongoose.Schema({
             }
         }],
         default:[]
+    },
+    dateline:{
+        type:Date,
+        default : new Date(8640000000000000) 
     }
 },{
     timestamps:true

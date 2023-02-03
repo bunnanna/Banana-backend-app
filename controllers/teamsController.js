@@ -1,8 +1,10 @@
 const Team = require("../models/Team")
+const User = require("../models/User")
 
 // GET 
 const getallTeams = async(req,res)=>{
-    const teams = await Team.find().lean()
+    const {filter}=req.body
+    const teams = await Team.find(filter).populate("manager","_id username").populate("member","_id username").populate("project","_id projectname").lean()
     if(!teams?.length){
         return res.status(400).json({message:"Team Not Found"})
     }
@@ -32,8 +34,8 @@ const createTeam = async(req,res)=>{
 }
 // PATCH
 const updateTeam = async (req,res) =>{
-    const{id,teamname,manager,member,project} = req.body
-    if (!id||!teamname){
+    const{id,teamname,manager,member} = req.body
+    if (!id){
         return res.status(400).json({message:"All Field Except Teams Are Require"})
     }
 
@@ -45,10 +47,16 @@ const updateTeam = async (req,res) =>{
     if(duplicate && duplicate?._id.toString() !== id){
         return res.status(409).json({message:"Duplicate username"})
     }
-    team.teamname = teamname
-    team.manager = manager
-    team.member = member
-    team.project = project
+    if(member){
+        const added_members = member.filter(e=>!team.member.map(String).includes(e))
+        const del_members = team.member.map(String).filter(e=>!member.includes(e))
+        added_members.map(async user=>await User.findByIdAndUpdate(user,{$push:{"teams":team._id}}))
+        del_members.map(async user=>await User.findByIdAndUpdate(user,{$pull:{"teams":team._id}}))
+    }
+
+    if(teamname) team.teamname = teamname
+    if(manager) team.manager = manager
+    if(member) team.member = member
 
     const updateTeam = await team.save()
 
@@ -62,6 +70,8 @@ const deleteTeam = async (req,res)=>{
     const team = await Team.findById(id).exec()
     if(!team) return res.status(400).json({message:`Team not Found`})
 
+    team.member.map(async user=> await User.findByIdAndUpdate(user,{$pull:{"teams":team._id}}))
+    
     const result = await team.deleteOne()
     const reply = `Teamname: ${result.teamname} with ID : ${result._id} is deleted`
     res.json(reply)
