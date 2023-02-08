@@ -5,9 +5,7 @@ const Project = require("../models/Project")
 const getallTasks = async(req,res)=>{
     const {filter} = req.body
     const tasks = await Task.find(filter).populate("project","_id projectname").populate("teams","_id teamname").populate("skills","_id skillname").populate("activity.username","_id username").lean()
-    if(!tasks?.length){
-        return res.status(400).json({message:"Task Not Found"})
-    }
+
     res.json(tasks)
 }
 // CREATE 
@@ -35,8 +33,8 @@ const createTask = async(req,res)=>{
 // PATCH
 const updateTask = async (req,res) =>{
     const{id,project,taskname,teams,skills,description,checklists,complete,status,activity,dateline} = req.body
-    if (!id||!project||!taskname||!Array.isArray(teams)||!Array.isArray(skills)||!Array.isArray(checklists)||!activity){
-        return res.status(400).json({message:"All * Field Are Require"})
+    if (!id||!activity){
+        return res.status(400).json({message:"Need Activity to Update"})
     }
     if (checklists?.length>0) {
         if (!checklists.every(o=>typeof o.check ==="boolean" && typeof o.subtask ==="string")){
@@ -52,7 +50,6 @@ const updateTask = async (req,res) =>{
     if(duplicate && duplicate?._id.toString() !== id){
         return res.status(409).json({message:"Duplicate username"})
      }
-    console.log(req.body);
     if(project)task.project=project
     if(taskname) task.taskname=taskname
     if(teams) task.teams=teams

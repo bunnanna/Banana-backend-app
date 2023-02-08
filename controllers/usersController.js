@@ -4,22 +4,10 @@ const bcrypt = require('bcrypt');
 const getallUsers = async(req,res)=>{
     const {filter} = req.body
     const users = await User.find(filter).select("-password").populate("roles","_id rolename").populate("teams","_id teamname").populate("skills","_id skillname").lean()
-    if(!users?.length){
-        return res.status(400).json({message:"User Not Found"})
-    }
-    // const ReadableUser = await Promise.all(users.map(async(user)=>{
-    //     const roles = await Promise.all(user.roles.map(async(role)=>{
-    //         return role.rolename
-    //     }))
-    //     const teams = await Promise.all(user.teams.map(async(team)=>{
-    //         return team.teamname
-    //     }))
-    //     const skills = await Promise.all(user.skills.map(async(skill)=>{
-    //         return skill.skillname
-    //     }))
-
-    //     return {...user,roles,teams,skills}
-    // }))
+    // if(!users?.length){
+    //     return res.status(400).json({message:"User Not Found"})
+    // }
+    
     res.json(users)
 }
 // CREATE 
@@ -46,24 +34,28 @@ const createUser = async(req,res)=>{
 }
 // PATCH
 const updateUser = async (req,res) =>{
-    const{id,username,password,roles,teams,active,skills} = req.body
-    if (!id||!username||!Array.isArray(roles)){
+    const{id,username,prvpassword,password,roles,teams,active,skills} = req.body
+    if (!id||!username){
         return res.status(400).json({message:"All Field Except Teams Are Require"})
     }
-
     const user = await User.findById(id).exec()
 
+    const checkpwd = await bcrypt.compare(prvpassword, user.password)
+
+    if(password){if(!checkpwd) return res.status(400).json({message:"Wrong password"})}
+    
     if (!user) return res.status(400).json({message:"User Not Found"})
 
     const duplicate = await User.findOne({username}).collation({locale:"en",strength:2}).collation({locale:"ja",strength:2}).lean().exec()
     if(duplicate && duplicate?._id.toString() !== id){
         return res.status(409).json({message:"Duplicate username"})
     }
-    user.username = username
-    user.roles = roles
-    user.active = active
-    user.teams = teams
-    user.skills = skills
+
+    if(username)user.username = username
+    if(roles)user.roles = roles
+    if(typeof active === "boolean")user.active = active
+    if(teams)user.teams = teams
+    if(skills)user.skills = skills
     if(password) user.password = await bcrypt.hash(password,10)
 
     const updateUser = await user.save()

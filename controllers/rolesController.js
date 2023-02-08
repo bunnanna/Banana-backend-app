@@ -3,10 +3,6 @@ const Role = require("../models/Role")
 // GET 
 const getallRoles = async(req,res)=>{
     const roles = await Role.find().lean()
-    if(!roles?.length){
-        return res.status(400).json({message:"Role Not Found"})
-    }
-
     res.json(roles)
 }
 // CREATE 

@@ -3,9 +3,7 @@ const Skill = require("../models/Skill")
 // GET 
 const getallSkills = async(req,res)=>{
     const skills = await Skill.find().lean()
-    if(!skills?.length){
-        return res.status(400).json({message:"Skill Not Found"})
-    }
+
 
     res.json(skills)
 }

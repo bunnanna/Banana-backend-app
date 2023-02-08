@@ -6,9 +6,6 @@ const Team = require("../models/Team")
 const getallProjects = async(req,res)=>{
     const {filter}= req.body
     const projects = await Project.find(filter).populate("tasks","_id taskname complete").populate("teams","_id teamname").populate("manager","_id username").lean()
-    if(!projects?.length){
-        return res.status(400).json({message:"Project Not Found"})
-    }
 
     res.json(projects)
 }

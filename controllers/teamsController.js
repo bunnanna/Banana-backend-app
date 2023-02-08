@@ -5,15 +5,12 @@ const User = require("../models/User")
 const getallTeams = async(req,res)=>{
     const {filter}=req.body
     const teams = await Team.find(filter).populate("manager","_id username").populate("member","_id username").populate("project","_id projectname").lean()
-    if(!teams?.length){
-        return res.status(400).json({message:"Team Not Found"})
-    }
 
     res.json(teams)
 }
 // CREATE 
 const createTeam = async(req,res)=>{
-    const{teamname,manager,member,project} = req.body
+    const{teamname,manager,member} = req.body
     if (!teamname,!manager){
         return res.status(400).json({message:"All Field Are Require"})
     }
@@ -22,9 +19,11 @@ const createTeam = async(req,res)=>{
         return res.status(409).json({message:"Duplicate teamname"})
     }
 
-    const teamObject = {teamname,manager,member,project}
+    const teamObject = {teamname,manager,member}
 
     const team = await Team.create(teamObject)
+
+    member.map(async user=>await User.findByIdAndUpdate(user,{$push:{"teams":team._id}}))
 
     if(team){
         res.status(201).json({message:`New team ${teamname} created`})
