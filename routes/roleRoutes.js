@@ -7,4 +7,6 @@ router.route("/")
 .patch(rolesController.updateRole)
 .delete(rolesController.deleteRole)
 
+router.route("/:filter")
+.get(rolesController.getallRoles)
 module.exports = router

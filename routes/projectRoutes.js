@@ -7,4 +7,6 @@ router.route("/")
 .patch(projectsController.updateProject)
 .delete(projectsController.deleteProject)
 
+router.route("/:filter")
+.get(projectsController.getallProjects)
 module.exports = router

@@ -3,7 +3,9 @@ const Project = require("../models/Project")
 
 // GET 
 const getallTasks = async(req,res)=>{
-    const {filter} = req.body
+    // if (typeof filter != "object") filter = null
+    const filter = JSON.parse(req.params.filter)
+    if (typeof filter != "object") filter = null
     const tasks = await Task.find(filter).populate("project","_id projectname").populate("teams","_id teamname").populate("skills","_id skillname").populate("activity.username","_id username").lean()
 
     res.json(tasks)

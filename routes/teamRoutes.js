@@ -7,4 +7,6 @@ router.route("/")
 .patch(teamsController.updateTeam)
 .delete(teamsController.deleteTeam)
 
+router.route("/:filter")
+.get(teamsController.getallTeams)
 module.exports = router

@@ -3,7 +3,8 @@ const User = require("../models/User")
 
 // GET 
 const getallTeams = async(req,res)=>{
-    const {filter}=req.body
+    let filter = JSON.parse(req.params.filter)
+    if (typeof filter != "object") filter = null
     const teams = await Team.find(filter).populate("manager","_id username").populate("member","_id username").populate("project","_id projectname").lean()
 
     res.json(teams)

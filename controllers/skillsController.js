@@ -2,6 +2,8 @@ const Skill = require("../models/Skill")
 
 // GET 
 const getallSkills = async(req,res)=>{
+    const filter = JSON.parse(req.params.filter)
+    if (typeof filter != "object") filter = null
     const skills = await Skill.find().lean()
 
 

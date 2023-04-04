@@ -6,7 +6,9 @@ router.route("/")
 .post(tasksController.createTask)
 .patch(tasksController.updateTask)
 .delete(tasksController.deleteTask)
-.put(tasksController.getallTasks)
+
+router.route("/:filter")
+.get(tasksController.getallTasks)
 
 router.route("/checklists")
 .patch(tasksController.updatecheckTask)

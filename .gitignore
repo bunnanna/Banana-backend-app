@@ -2,3 +2,4 @@ node_module
 logs
 .env
 node_modules
+bocchi*
