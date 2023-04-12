@@ -8,5 +8,5 @@ router.route("/")
 .delete(usersController.deleteUser)
 
 router.route("/:filter")
-.get(usersController.getallUsers)
+.get(usersController.getsomeUsers)
 module.exports = router

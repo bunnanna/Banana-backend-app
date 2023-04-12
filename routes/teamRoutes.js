@@ -8,5 +8,5 @@ router.route("/")
 .delete(teamsController.deleteTeam)
 
 router.route("/:filter")
-.get(teamsController.getallTeams)
+.get(teamsController.getsomeTeams)
 module.exports = router

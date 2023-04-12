@@ -2,12 +2,15 @@ const User = require("../models/User")
 const bcrypt = require('bcrypt');
 // GET 
 const getallUsers = async(req,res)=>{
+    if (typeof filter != "object") filter = null
+    const users = await User.find(filter).select("-password").populate("roles","_id rolename").populate("teams","_id teamname").populate("skills","_id skillname").lean()
+    
+    res.json(users)
+}
+const getsomeUsers = async(req,res)=>{
     const filter = JSON.parse(req.params.filter)
     if (typeof filter != "object") filter = null
     const users = await User.find(filter).select("-password").populate("roles","_id rolename").populate("teams","_id teamname").populate("skills","_id skillname").lean()
-    // if(!users?.length){
-    //     return res.status(400).json({message:"User Not Found"})
-    // }
     
     res.json(users)
 }
@@ -76,4 +79,4 @@ const deleteUser = async (req,res)=>{
     res.json(reply)
 }
 
-module.exports = {getallUsers,createUser,updateUser,deleteUser}
+module.exports = {getallUsers,getsomeUsers,createUser,updateUser,deleteUser}

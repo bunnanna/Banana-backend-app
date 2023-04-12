@@ -3,7 +3,11 @@ const Project = require("../models/Project")
 
 // GET 
 const getallTasks = async(req,res)=>{
-    // if (typeof filter != "object") filter = null
+    const tasks = await Task.find(filter).populate("project","_id projectname").populate("teams","_id teamname").populate("skills","_id skillname").populate("activity.username","_id username").lean()
+
+    res.json(tasks)
+}
+const getsomeTasks = async(req,res)=>{
     const filter = JSON.parse(req.params.filter)
     if (typeof filter != "object") filter = null
     const tasks = await Task.find(filter).populate("project","_id projectname").populate("teams","_id teamname").populate("skills","_id skillname").populate("activity.username","_id username").lean()
@@ -103,4 +107,4 @@ const deleteTask = async (req,res)=>{
     res.json(reply)
 }
 
-module.exports = {getallTasks,createTask,updateTask,deleteTask,updatecheckTask}
+module.exports = {getallTasks,getsomeTasks,createTask,updateTask,deleteTask,updatecheckTask}

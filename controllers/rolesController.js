@@ -2,11 +2,10 @@ const Role = require("../models/Role")
 
 // GET 
 const getallRoles = async(req,res)=>{
-    const filter = JSON.parse(req.params.filter)
-    if (typeof filter != "object") filter = null
     const roles = await Role.find().lean()
     res.json(roles)
 }
+
 // CREATE 
 const createRole = async(req,res)=>{
     if (!rolename){

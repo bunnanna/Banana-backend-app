@@ -7,7 +7,4 @@ router.route("/")
 .patch(skillsController.updateSkill)
 .delete(skillsController.deleteSkill)
 
-router.route("/:filter")
-.get(skillsController.getallSkills)
-
 module.exports = router

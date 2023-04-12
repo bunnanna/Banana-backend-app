@@ -3,6 +3,11 @@ const User = require("../models/User")
 
 // GET 
 const getallTeams = async(req,res)=>{
+    const teams = await Team.find(filter).populate("manager","_id username").populate("member","_id username").populate("project","_id projectname").lean()
+
+    res.json(teams)
+}
+const getsomeTeams = async(req,res)=>{
     let filter = JSON.parse(req.params.filter)
     if (typeof filter != "object") filter = null
     const teams = await Team.find(filter).populate("manager","_id username").populate("member","_id username").populate("project","_id projectname").lean()
@@ -77,4 +82,4 @@ const deleteTeam = async (req,res)=>{
     res.json(reply)
 }
 
-module.exports = {getallTeams,createTeam,updateTeam,deleteTeam}
+module.exports = {getallTeams,getsomeTeams,createTeam,updateTeam,deleteTeam}

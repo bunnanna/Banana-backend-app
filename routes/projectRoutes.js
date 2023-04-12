@@ -8,5 +8,5 @@ router.route("/")
 .delete(projectsController.deleteProject)
 
 router.route("/:filter")
-.get(projectsController.getallProjects)
+.get(projectsController.getsomeProjects)
 module.exports = router
