@@ -1,19 +1,15 @@
 const Team = require("../models/Team")
 const User = require("../models/User")
+const { jsonParser } = require("./jsonParser")
 
 // GET 
 const getallTeams = async(req,res)=>{
+    const filter = jsonParser(req.query) 
     const teams = await Team.find(filter).populate("manager","_id username").populate("member","_id username").populate("project","_id projectname").lean()
 
     res.json(teams)
 }
-const getsomeTeams = async(req,res)=>{
-    let filter = JSON.parse(req.params.filter)
-    if (typeof filter != "object") filter = null
-    const teams = await Team.find(filter).populate("manager","_id username").populate("member","_id username").populate("project","_id projectname").lean()
 
-    res.json(teams)
-}
 // CREATE 
 const createTeam = async(req,res)=>{
     const{teamname,manager,member} = req.body

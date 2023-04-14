@@ -1,19 +1,14 @@
 const User = require("../models/User")
 const bcrypt = require('bcrypt');
+const { jsonParser } = require("./jsonParser");
 // GET 
 const getallUsers = async(req,res)=>{
-    if (typeof filter != "object") filter = null
+    const filter = jsonParser(req.query) 
     const users = await User.find(filter).select("-password").populate("roles","_id rolename").populate("teams","_id teamname").populate("skills","_id skillname").lean()
     
     res.json(users)
 }
-const getsomeUsers = async(req,res)=>{
-    const filter = JSON.parse(req.params.filter)
-    if (typeof filter != "object") filter = null
-    const users = await User.find(filter).select("-password").populate("roles","_id rolename").populate("teams","_id teamname").populate("skills","_id skillname").lean()
-    
-    res.json(users)
-}
+
 // CREATE 
 const createUser = async(req,res)=>{
     const{username,password,roles,teams,skills} = req.body

@@ -7,6 +7,4 @@ router.route("/")
 .patch(usersController.updateUser)
 .delete(usersController.deleteUser)
 
-router.route("/:filter")
-.get(usersController.getsomeUsers)
 module.exports = router

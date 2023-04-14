@@ -1,19 +1,15 @@
 const Task = require("../models/Task")
 const Project = require("../models/Project")
+const { jsonParser } = require("./jsonParser")
 
 // GET 
 const getallTasks = async(req,res)=>{
+    const filter = jsonParser(req.query) 
     const tasks = await Task.find(filter).populate("project","_id projectname").populate("teams","_id teamname").populate("skills","_id skillname").populate("activity.username","_id username").lean()
 
     res.json(tasks)
 }
-const getsomeTasks = async(req,res)=>{
-    const filter = JSON.parse(req.params.filter)
-    if (typeof filter != "object") filter = null
-    const tasks = await Task.find(filter).populate("project","_id projectname").populate("teams","_id teamname").populate("skills","_id skillname").populate("activity.username","_id username").lean()
 
-    res.json(tasks)
-}
 // CREATE 
 const createTask = async(req,res)=>{
     const{project,taskname,teams,skills,description,checklists} = req.body

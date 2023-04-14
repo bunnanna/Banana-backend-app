@@ -1,10 +1,12 @@
 const Project = require("../models/Project")
 const Task = require("../models/Task")
 const Team = require("../models/Team")
+const { jsonParser } = require("./jsonParser")
 
 // GET 
 const getallProjects = async(req,res)=>{
-    const projects = await Project.find().populate("tasks","_id taskname complete").populate("teams","_id teamname").populate("manager","_id username").lean()
+    const filter = jsonParser(req.query) 
+    const projects = await Project.find(filter).populate("tasks","_id taskname complete").populate("teams","_id teamname").populate("manager","_id username").lean()
 
     res.json(projects)
 }
