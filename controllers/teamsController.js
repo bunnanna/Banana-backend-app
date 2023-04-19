@@ -78,4 +78,4 @@ const deleteTeam = async (req,res)=>{
     res.json(reply)
 }
 
-module.exports = {getallTeams,getsomeTeams,createTeam,updateTeam,deleteTeam}
+module.exports = {getallTeams,createTeam,updateTeam,deleteTeam}

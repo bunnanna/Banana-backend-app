@@ -74,4 +74,4 @@ const deleteUser = async (req,res)=>{
     res.json(reply)
 }
 
-module.exports = {getallUsers,getsomeUsers,createUser,updateUser,deleteUser}
+module.exports = {getallUsers,createUser,updateUser,deleteUser}
