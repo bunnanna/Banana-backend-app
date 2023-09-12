@@ -10,13 +10,7 @@ const getallProjects = async(req,res)=>{
 
     res.json(projects)
 }
-const getsomeProjects = async(req,res)=>{
-    let filter = JSON.parse(req.params.filter)
-    if (typeof filter != "object") filter = null
-    const projects = await Project.find(filter).populate("tasks","_id taskname complete").populate("teams","_id teamname").populate("manager","_id username").lean()
 
-    res.json(projects)
-}
 // CREATE 
 const createProject = async(req,res)=>{
     const{projectname,manager,teams} = req.body
@@ -86,4 +80,4 @@ const deleteProject = async (req,res)=>{
     res.json(reply)
 }
 
-module.exports = {getallProjects,getsomeProjects,createProject,updateProject,deleteProject}
+module.exports = {getallProjects,createProject,updateProject,deleteProject}

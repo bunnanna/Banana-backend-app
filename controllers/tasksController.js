@@ -103,4 +103,4 @@ const deleteTask = async (req,res)=>{
     res.json(reply)
 }
 
-module.exports = {getallTasks,getsomeTasks,createTask,updateTask,deleteTask,updatecheckTask}
+module.exports = {getallTasks,createTask,updateTask,deleteTask,updatecheckTask}
